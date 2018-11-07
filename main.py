@@ -40,8 +40,8 @@ def send(chat):
 
     markup = InlineKeyboardMarkup()
 
-    button1 = InlineKeyboardButton('Осмысленно', callback_data=f'1\t{d["chat_id"]}\t{l}')
-    button2 = InlineKeyboardButton('Не осмысленно', callback_data=f'0\t{d["chat_id"]}\t{l}')
+    button1 = InlineKeyboardButton('Осмысленно', callback_data=f'1\t{d["chat_id"]}\t{msg_count}')
+    button2 = InlineKeyboardButton('Не осмысленно', callback_data=f'0\t{d["chat_id"]}\t{msg_count}')
     markup.add(button1, button2)
 
     bot.send_message(chat.id, response, reply_markup=markup, parse_mode='HTML')
