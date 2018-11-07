@@ -106,4 +106,4 @@ def handle_callback(call):
 #     bot.send_message(chat_id, '', parse_mode="Markdown")
 
 
-bot.polling()
+bot.polling(none_stop=True)
