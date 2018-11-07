@@ -64,7 +64,11 @@ def start_message(message):
 @bot.callback_query_handler(lambda call: True)
 def handle_callback(call):
     chat = call.from_user
-    meaningful, chat_id, msg_count = call.data.split('\t')
+    try:
+        meaningful, chat_id, msg_count = call.data.split('\t')
+    except:
+        send(call.from_user)
+        return
     callback_data = {
         'meaningful': bool(int(meaningful)),
         'chat_id': chat_id,
