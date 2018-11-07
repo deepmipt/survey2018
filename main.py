@@ -1,6 +1,7 @@
 import html
 import json
 import random
+from datetime import datetime
 from pathlib import Path
 
 import telebot
@@ -85,6 +86,7 @@ def handle_callback(call):
         'meaningful': bool(int(meaningful)),
         'chat_id': chat_id,
         'msg_count': msg_count,
+        'time': str(datetime.now()),
         'tg_user': {
             'id': chat.id,
             'username': getattr(chat, 'username', None),
