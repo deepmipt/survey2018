@@ -38,14 +38,26 @@ bot = telebot.TeleBot(TOKEN)
 
 def send(chat):
     d = random.choice(data)
+    while len(d['messages']) < 3:
+        d = random.choice(data)
     msg_count = len(d['messages'])
     msg_count = random.randint(min(3, msg_count), msg_count)
     if d['messages'][msg_count-1]['speaker'] != 'Operator':
         msg_count += 1
     messages = d['messages'][:msg_count]
     msg_count = len(messages)
-    response = "\n".join([f'<b>{m["speaker"].upper()}</b>: ' + html.escape(m['utterance'].replace('__eou__', ''))
+    response = "\n".join([f'<b>{m["speaker"].upper()}</b>: ' + html.escape(m['utterance']
+                                                                           .replace('__eou__', '')
+                                                                           .replace('\\n', '\n'))
+                         .replace('SN_TOKEN', '<i>ОТЧЕСТВО</i>')
+                         .replace('FN_TOKEN', '<i>ИМЯ</i>')
+                         .replace('N_TOKEN', '<i>ИМЯ</i>')
+                         .replace('NUM_TOKEN', '<i>НОМЕР_КАРТЫ</i>')
+                         .replace('PHONE_TOKEN', '<i>ТЕЛЕФОН</i>')
                           for m in messages])
+
+    if len(response) > 4000:
+        return send(chat)
 
     markup = InlineKeyboardMarkup()
 
