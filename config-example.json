@@ -1,0 +1,6 @@
+{
+  "DATA_PATH": "~/Downloads/bot_dialogs.json",
+  "LOG_PATH": "output.jsonl",
+  "TOKEN": "TELEGRAM-TOKEN",
+  "PROXY": "socks5://login:pass@addr:port"
+}
