@@ -67,7 +67,7 @@ def handle_callback(call):
             'last_name': getattr(chat, 'last_name', None)
         }
     }
-    callback_data = json.dumps(callback_data)
+    callback_data = json.dumps(callback_data, ensure_ascii=False)
     print(callback_data)
     print(callback_data, file=logfile, flush=True)
     send(call.from_user)
