@@ -15,8 +15,16 @@ TOKEN = config['TOKEN']
 PROXY = config['PROXY']
 
 
-with DATA_PATH.open(encoding='utf-8') as f:
-    data = json.load(f)
+data = []
+if DATA_PATH.is_dir():
+    for p in DATA_PATH.glob('**/*.json'):
+        with p.open(encoding='utf-8') as f:
+            data += json.load(f)
+elif DATA_PATH.is_file():
+    with DATA_PATH.open(encoding='utf-8') as f:
+        data = json.load(f)
+else:
+    raise RuntimeError(f'{DATA_PATH} is not there')
 # data = {item['chat_id']: item for item in data}
 
 logfile = LOG_PATH.open('a', encoding='utf-8')
@@ -35,6 +43,7 @@ def send(chat):
     if d['messages'][msg_count-1]['speaker'] != 'Operator':
         msg_count += 1
     messages = d['messages'][:msg_count]
+    msg_count = len(messages)
     response = "\n".join([f'<b>{m["speaker"].upper()}</b>: ' + html.escape(m['utterance'].replace('__eou__', ''))
                           for m in messages])
 
