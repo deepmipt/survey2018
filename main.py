@@ -1,6 +1,7 @@
 import html
 import json
 import random
+from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
@@ -28,6 +29,15 @@ else:
     raise RuntimeError(f'{DATA_PATH} is not there')
 # data = {item['chat_id']: item for item in data}
 
+models_data = defaultdict(list)
+for item in data:
+    model = item['model']
+    ex_iter = None if model in ['random', 'no_model'] else item['experiment_iter']
+    item['id'] = f"{item['experiment_iter']}_{item['experiment_id']}"
+    models_data[(model, ex_iter)].append(item)
+data = models_data
+del models_data
+
 logfile = LOG_PATH.open('a', encoding='utf-8')
 
 
@@ -38,9 +48,10 @@ bot = telebot.TeleBot(TOKEN)
 
 
 def send(chat):
-    d = random.choice(data)
+    key = random.choice(list(data.keys()))
+    d = random.choice(data[key])
     while len(d['messages']) < 3:
-        d = random.choice(data)
+        d = random.choice(data[key])
     msg_count = len(d['messages'])
     msg_count = random.randint(min(3, msg_count), msg_count)
     if d['messages'][msg_count-1]['speaker'] != 'Operator':
@@ -62,8 +73,8 @@ def send(chat):
 
     markup = InlineKeyboardMarkup()
 
-    button1 = InlineKeyboardButton('Осмысленно', callback_data=f'1\t{d["chat_id"]}\t{msg_count}')
-    button2 = InlineKeyboardButton('Не осмысленно', callback_data=f'0\t{d["chat_id"]}\t{msg_count}')
+    button1 = InlineKeyboardButton('Осмысленно', callback_data=f'1\t{d["chat_id"]}\t{msg_count}\t{d["id"]}')
+    button2 = InlineKeyboardButton('Не осмысленно', callback_data=f'0\t{d["chat_id"]}\t{msg_count}\t{d["id"]}')
     markup.add(button1, button2)
 
     bot.send_message(chat.id, response, reply_markup=markup, parse_mode='HTML')
@@ -78,13 +89,14 @@ def start_message(message):
 def handle_callback(call):
     chat = call.from_user
     try:
-        meaningful, chat_id, msg_count = call.data.split('\t')
+        meaningful, chat_id, msg_count, _id = call.data.split('\t')
     except:
         send(call.from_user)
         return
     callback_data = {
         'meaningful': bool(int(meaningful)),
         'chat_id': chat_id,
+        'id': _id,
         'msg_count': msg_count,
         'time': str(datetime.now()),
         'tg_user': {
