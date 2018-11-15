@@ -38,6 +38,8 @@ for item in data:
 data = models_data
 del models_data
 
+replies_counter = defaultdict(int)
+
 logfile = LOG_PATH.open('a', encoding='utf-8')
 
 
@@ -68,7 +70,7 @@ def send(chat):
                          .replace('PHONE_TOKEN', '<i>ТЕЛЕФОН</i>')
                           for m in messages])
 
-    if len(response) > 4000:
+    if len(response) > 2000:
         return send(chat)
 
     markup = InlineKeyboardMarkup()
@@ -77,6 +79,8 @@ def send(chat):
     button2 = InlineKeyboardButton('Не осмысленно', callback_data=f'0\t{d["chat_id"]}\t{msg_count}\t{d["id"]}')
     markup.add(button1, button2)
 
+    if replies_counter[chat.id] % 5 == 0:
+        bot.send_message(chat.id, f'Натолочено {replies_counter[chat.id]} диалогов')
     bot.send_message(chat.id, response, reply_markup=markup, parse_mode='HTML')
 
 
@@ -109,6 +113,7 @@ def handle_callback(call):
     callback_data = json.dumps(callback_data, ensure_ascii=False)
     print(callback_data)
     print(callback_data, file=logfile, flush=True)
+    replies_counter[chat.id] += 1
     send(call.from_user)
 
 
