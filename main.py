@@ -19,9 +19,13 @@ PROXY = config['PROXY']
 
 data = []
 if DATA_PATH.is_dir():
-    for p in DATA_PATH.glob('**/*.json'):
+    for p in DATA_PATH.glob('*.json'):
         with p.open(encoding='utf-8') as f:
             data += json.load(f)
+    for p in DATA_PATH.glob('*.jsonl'):
+        with p.open(encoding='utf-8') as f:
+            for line in f:
+                data.append(json.loads(line))
 elif DATA_PATH.is_file():
     with DATA_PATH.open(encoding='utf-8') as f:
         data = json.load(f)
